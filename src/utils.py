@@ -1,3 +1,4 @@
+import matplotlib
 import argparse
 import inspect
 import json
@@ -205,6 +206,7 @@ def add_argument(parser):
 
 class Args:
     data_dir = None
+    data_dir_for_val = None
     data_kind = None
     debug = None
     train_batch_size = None
@@ -319,7 +321,7 @@ def init(args_: Args, logger_):
 
     def init_args_do_eval():
         if args.argoverse:
-            args.data_dir = args.data_dir_for_val if not args.do_test else 'test_obs/data/'
+            args.data_dir = args.data_dir_for_val if not args.do_test else '/data/jerome.zhou/motion-forecasting/test_obs/data/'
         if args.model_recover_path is None:
             args.model_recover_path = os.path.join(args.output_dir, 'model_save', 'model.16.bin')
         elif len(args.model_recover_path) <= 2:
@@ -1750,3 +1752,20 @@ def get_static_var(obj, name, default=None, path=None):
 
 def to_numpy(tensor):
     return tensor.detach().cpu().numpy()
+
+
+def submit_res(args: Args, argo_pred: structs.ArgoPred):
+    """Generate .h5 submit file.
+
+    Args:
+        argo_pred (structs.ArgoPred): _description_
+    """
+    from argoverse.evaluation.competition_util import generate_forecasting_h5
+    output_path = os.path.join(args.output_dir)
+    id2info = {}
+    id2prob = {}
+    for file_name, res in argo_pred.items():
+        id2info[get_file_name_int(file_name)] = res.trajs
+        id2prob[get_file_name_int(file_name)] = np.exp(res.scores)/sum(np.exp(res.scores))
+    
+    generate_forecasting_h5(id2info, output_path, probabilities=id2prob)

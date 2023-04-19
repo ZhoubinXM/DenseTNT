@@ -94,10 +94,14 @@ def do_eval(args):
 
         if args.argoverse:
             eval_instance_argoverse(batch_size, args, pred_trajectory, mapping, file2pred, file2labels, DEs, iter_bar)
+    
+    if args.do_test:
+        utils.submit_res(args, argo_pred)
+
     if 'optimization' in args.other_params:
         utils.select_goals_by_optimization(None, None, close=True)
 
-    if args.argoverse:
+    if args.argoverse and not args.do_test:
         from dataset_argoverse import post_eval
         post_eval(args, file2pred, file2labels, DEs)
 

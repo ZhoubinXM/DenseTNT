@@ -17,7 +17,6 @@ class NewSubGraph(nn.Module):
         if depth is None:
             depth = args.sub_graph_depth
         self.layers = nn.ModuleList([MLP(hidden_size, hidden_size // 2) for _ in range(depth)])
-
         self.layer_0 = MLP(hidden_size)
         self.layers = nn.ModuleList([GlobalGraph(hidden_size, num_attention_heads=2) for _ in range(depth)])
         self.layers_2 = nn.ModuleList([LayerNorm(hidden_size) for _ in range(depth)])

@@ -267,20 +267,20 @@ def preprocess(args, id2info, mapping):
                 vectors.append(get_pad_vector(vector))
             line_pre = line
 
-        end = len(vectors)
+        end = len(vectors)  # [19, 128]
         if end - start == 0:
             assert id != 'AV' and id != 'AGENT'
         else:
             mapping['agents'].append(np.array(agent))
 
-            polyline_spans.append([start, end])
+            polyline_spans.append([start, end])  # every poly's s->e
 
     assert_(len(mapping['agents']) == len(polyline_spans))
 
     assert len(vectors) <= max_vector_num
 
     t = len(vectors)
-    mapping['map_start_polyline_idx'] = len(polyline_spans)
+    mapping['map_start_polyline_idx'] = len(polyline_spans)  # every poly's start index in spans
     if args.use_map:
         vectors, polyline_spans = get_sub_map(args, mapping['cent_x'], mapping['cent_y'], mapping['city_name'],
                                               vectors=vectors,
@@ -305,6 +305,8 @@ def preprocess(args, id2info, mapping):
             pass
         else:
             assert len(info) == 30
+    else:
+        labels = [0.0 for _ in range(60)]
     for line in info:
         labels.append(line[X])
         labels.append(line[Y])

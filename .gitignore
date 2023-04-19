@@ -3,3 +3,4 @@ src/build
 src/__pycache__
 src/modeling/__pycache__
 utils_cython*
+result
